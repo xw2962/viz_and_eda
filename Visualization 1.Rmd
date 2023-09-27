@@ -192,18 +192,21 @@ weather_df |>
 ```
 ## Save and Export 
 ```{r}
-weather_plot = ggplot(weather_df, aes(x = tmin, y = tmax)) + 
-  geom_point(aes(color = name), alpha = .5) 
+weather_plot =
+  weather_df |> 
+  ggplot(aes(x = tmin, y = tmax,color=name)) + 
+  geom_point(alpha = .5) 
 
 ggsave("weather_plot.pdf", weather_plot, width = 8, height = 5)
 ```
-
-```{r}
-knitr::opts_chunk$set(
-  fig.width = 6,
-  fig.asp = .6,
-  out.width = "90%"
-)
+What about emdedding? 
+```{r,fig.width=6,fig.height=3}
+weather_plot
+# embed figures in r-markdown document 
+```
+Embed at different size. 
+```{r, fig.width=12,fig.height=6}
+weather_plot
 # embed figures in r-markdown document 
 ```
 

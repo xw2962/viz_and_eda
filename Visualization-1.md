@@ -422,19 +422,35 @@ weather_df |>
 ## Save and Export
 
 ``` r
-weather_plot = ggplot(weather_df, aes(x = tmin, y = tmax)) + 
-  geom_point(aes(color = name), alpha = .5) 
+weather_plot =
+  weather_df |> 
+  ggplot(aes(x = tmin, y = tmax,color=name)) + 
+  geom_point(alpha = .5) 
 
 ggsave("weather_plot.pdf", weather_plot, width = 8, height = 5)
 ```
 
     ## Warning: Removed 17 rows containing missing values (`geom_point()`).
 
+What about emdedding?
+
 ``` r
-knitr::opts_chunk$set(
-  fig.width = 6,
-  fig.asp = .6,
-  out.width = "90%"
-)
+weather_plot
+```
+
+    ## Warning: Removed 17 rows containing missing values (`geom_point()`).
+
+![](Visualization-1_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+Embed at different size.
+
+``` r
+weather_plot
+```
+
+    ## Warning: Removed 17 rows containing missing values (`geom_point()`).
+
+![](Visualization-1_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+``` r
 # embed figures in r-markdown document 
 ```
