@@ -81,6 +81,8 @@ weather_df
 
 ## Basic scatterplot
 
+Create my first scatterplot ever
+
 ``` r
 ggplot(weather_df, aes(x = tmin, y = tmax)) + 
   geom_point()
@@ -88,13 +90,21 @@ ggplot(weather_df, aes(x = tmin, y = tmax)) +
 
     ## Warning: Removed 17 rows containing missing values (`geom_point()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-2-1.png)<!-- --> New
+approach, same plot
 
 ``` r
-# OR weather_df |>
-#  ggplot(aes(x = tmin, y = tmax)) + 
-#  geom_point()
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point()
+```
 
+    ## Warning: Removed 17 rows containing missing values (`geom_point()`).
+
+![](Visualization-1_files/figure-gfm/unnamed-chunk-3-1.png)<!-- --> Save
+and edit a plot object
+
+``` r
 ggp_weather = 
   weather_df |>
   ggplot(aes(x = tmin, y = tmax)) 
@@ -104,7 +114,7 @@ ggp_weather + geom_point()
 
     ## Warning: Removed 17 rows containing missing values (`geom_point()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
 # Save the output of ggplot() to an object and modify / print it later.
@@ -113,21 +123,45 @@ ggp_weather + geom_point()
 ## Advanced scatterplot
 
 ``` r
-ggplot(weather_df, aes(x = tmin, y = tmax)) + 
-  geom_point(aes(color = name))
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax,color=name)) + 
+  geom_point()
 ```
 
     ## Warning: Removed 17 rows containing missing values (`geom_point()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
 # Incorporate using the color aesthetic.
 ```
 
 ``` r
-ggplot(weather_df, aes(x = tmin, y = tmax)) + 
-  geom_point(aes(color = name), alpha = .5) +
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax,color=name)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+
+    ## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).
+
+    ## Warning: Removed 17 rows containing missing values (`geom_point()`).
+
+![](Visualization-1_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+``` r
+# Add a smooth curve
+```
+
+what about the `aes` placement
+
+``` r
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color=name)) +
+# color only applies to the scatterplot
   geom_smooth(se = FALSE)
 ```
 
@@ -137,18 +171,29 @@ ggplot(weather_df, aes(x = tmin, y = tmax)) +
 
     ## Warning: Removed 17 rows containing missing values (`geom_point()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
-# Add a smooth curve
+# mostly we cannot define asthetics in the first step, we prefer to define in geom_point so that the color is not everywhere 
 ```
 
+Let’s facet some things!
+
 ``` r
-ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) + 
-  geom_point(alpha = .5) +
-  geom_smooth(se = FALSE) + 
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax,color=name)) + 
+  geom_point(alpha = .2) +
+# alpha makes individual points more transparent, 20% transparency. 
+  geom_smooth(se = FALSE,size=2)+
+# change the size of the smooth line 
   facet_grid(. ~ name)
 ```
+
+    ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+    ## ℹ Please use `linewidth` instead.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
 
     ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 
@@ -156,16 +201,19 @@ ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) +
 
     ## Warning: Removed 17 rows containing missing values (`geom_point()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ``` r
 # Add facet based on name
 ```
 
+Let’s combine some elements and try a new plot.
+
 ``` r
-ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
-  geom_point(aes(size = prcp), alpha = .5) +
-  geom_smooth(se = FALSE) + 
+weather_df |>
+  ggplot(aes(x = date, y = tmax,color=name)) + 
+  geom_point(aes(size=prcp),alpha = .5) +
+  geom_smooth(se = FALSE)+
   facet_grid(. ~ name)
 ```
 
@@ -175,7 +223,7 @@ ggplot(weather_df, aes(x = date, y = tmax, color = name)) +
 
     ## Warning: Removed 19 rows containing missing values (`geom_point()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ``` r
 # Set x axis as date and show the precipitation on graph 
@@ -196,10 +244,34 @@ weather_df |>
 
     ## `geom_smooth()` using formula = 'y ~ x'
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ``` r
 # Focuses only on Central Park, converts temperatures to Fahrenheit, makes a scatterplot of min vs. max temperature, and overlays a linear regression line (using options in geom_smooth(). 
+```
+
+## Some small notes
+
+How many geoms have to exist? You can have whatever geoms you want. You
+can use a neat geom!
+
+``` r
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax,color=name)) + 
+  geom_hex() 
+```
+
+    ## Warning: Removed 17 rows containing non-finite values (`stat_binhex()`).
+
+    ## Warning: Computation failed in `stat_binhex()`
+    ## Caused by error in `compute_group()`:
+    ## ! The package "hexbin" is required for `stat_binhex()`
+
+![](Visualization-1_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+``` r
+# geom_bin2d()
+# geom_density2d()
 ```
 
 ## Odds and Ends
@@ -213,7 +285,7 @@ ggplot(weather_df, aes(x = date, y = tmax, color = name)) +
 
     ## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
 ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin), color = "blue")
@@ -221,7 +293,7 @@ ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin), color = "blue")
 
     ## Warning: Removed 17 rows containing missing values (`geom_point()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
 # Defining the color of the points by hand
@@ -233,7 +305,7 @@ ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = "blue"))
 
     ## Warning: Removed 17 rows containing missing values (`geom_point()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ``` r
 # Creating a color variable that has the value blue everywhere; ggplot is then assigning colors according to this variable using the default color scheme.
@@ -241,48 +313,79 @@ ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = "blue"))
 
 ## Univariate plots
 
+Histograms are really great.
+
 ``` r
-ggplot(weather_df, aes(x = tmax, fill = name)) + 
-  geom_histogram(position = "dodge", binwidth = 2)
+weather_df |> 
+   ggplot(aes(x = tmin)) + 
+  geom_histogram()
 ```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
     ## Warning: Removed 17 rows containing non-finite values (`stat_bin()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
 # histogram
 ```
 
+Can we add color..
+
 ``` r
-ggplot(weather_df, aes(x = tmax, fill = name)) + 
-  geom_density(alpha = .4, adjust = .5, color = "blue")
+weather_df |> 
+  ggplot(aes(x = tmin,fill=name)) + 
+  geom_histogram(position="dodge") +
+# the bins sit next to each other 
+  facet_grid(.~name)
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 17 rows containing non-finite values (`stat_bin()`).
+
+![](Visualization-1_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+Let’s try a new geometry!
+
+``` r
+weather_df |> 
+  ggplot(aes(x = tmin,fill=name)) + 
+  geom_density(alpha = .4,adjust = .5) +
+  facet_grid(.~name)
 ```
 
     ## Warning: Removed 17 rows containing non-finite values (`stat_density()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ``` r
 # Density plot
 ```
 
+What about boxplots?
+
 ``` r
-ggplot(weather_df, aes(x = name, y = tmax)) + geom_boxplot()
+weather_df |> 
+  ggplot(aes(x = name,y=tmin)) + 
+  geom_boxplot()
 ```
 
     ## Warning: Removed 17 rows containing non-finite values (`stat_boxplot()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 ``` r
 # boxplot
 ```
 
+Trendy plots :)
+
 ``` r
-ggplot(weather_df, aes(x = name, y = tmax)) + 
-  geom_violin(aes(fill = name), alpha = .5) + 
-  stat_summary(fun = "median", color = "blue")
+weather_df |> 
+  ggplot(aes(x = name,y=tmin,fill=name)) + 
+  geom_violin(alpha=0.5) + 
+  stat_summary(fun="median")
 ```
 
     ## Warning: Removed 17 rows containing non-finite values (`stat_ydensity()`).
@@ -291,23 +394,26 @@ ggplot(weather_df, aes(x = name, y = tmax)) +
 
     ## Warning: Removed 3 rows containing missing values (`geom_segment()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 ``` r
 # violin plots
 ```
 
+Ridge plots
+
 ``` r
-ggplot(weather_df, aes(x = tmax, y = name)) + 
-  geom_density_ridges(scale = .85)
+weather_df |> 
+  ggplot(aes(x = tmin,y=name)) + 
+  geom_density_ridges() 
 ```
 
-    ## Picking joint bandwidth of 1.54
+    ## Picking joint bandwidth of 1.41
 
     ## Warning: Removed 17 rows containing non-finite values
     ## (`stat_density_ridges()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 ``` r
 # ridge plots
