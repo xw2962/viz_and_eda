@@ -1,0 +1,158 @@
+---
+title: "Visualization 1"
+author: "Xiaoyu Wu"
+date: "2023-09-27"
+output: github_document
+---
+
+```{r setup}
+library(tidyverse)
+library(ggridges)
+```
+
+## R Markdown
+
+```{r}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USW00022534", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2021-01-01",
+    date_max = "2022-12-31") |>
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USC00519397 = "Molokai_HI",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) |>
+  select(name, id, everything())
+weather_df
+```
+
+## Basic scatterplot
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point()
+
+# OR weather_df |>
+#  ggplot(aes(x = tmin, y = tmax)) + 
+#  geom_point()
+
+ggp_weather = 
+  weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) 
+
+ggp_weather + geom_point()
+# Save the output of ggplot() to an object and modify / print it later.
+```
+
+## Advanced scatterplot
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name))
+# Incorporate using the color aesthetic.
+```
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) +
+  geom_smooth(se = FALSE)
+# Add a smooth curve
+```
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) + 
+  geom_point(alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ name)
+# Add facet based on name
+```
+
+```{r}
+ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
+  geom_point(aes(size = prcp), alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ name)
+# Set x axis as date and show the precipitation on graph 
+```
+
+Learning Assessment 
+```{r}
+weather_df |> 
+  filter(name == "CentralPark_NY") |> 
+  mutate(
+    tmax_fahr = tmax * (9 / 5) + 32,
+    tmin_fahr = tmin * (9 / 5) + 32) |> 
+  ggplot(aes(x = tmin_fahr, y = tmax_fahr)) +
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm", se = FALSE)
+# Focuses only on Central Park, converts temperatures to Fahrenheit, makes a scatterplot of min vs. max temperature, and overlays a linear regression line (using options in geom_smooth(). 
+```
+
+## Odds and Ends 
+
+```{r}
+ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
+  geom_smooth(se = FALSE) 
+```
+
+```{r}
+ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin), color = "blue")
+# Defining the color of the points by hand
+```
+
+```{r}
+ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = "blue"))
+# Creating a color variable that has the value blue everywhere; ggplot is then assigning colors according to this variable using the default color scheme.
+```
+
+## Univariate plots
+
+```{r}
+ggplot(weather_df, aes(x = tmax, fill = name)) + 
+  geom_histogram(position = "dodge", binwidth = 2)
+# histogram
+```
+
+```{r}
+ggplot(weather_df, aes(x = tmax, fill = name)) + 
+  geom_density(alpha = .4, adjust = .5, color = "blue")
+# Density plot
+```
+
+```{r}
+ggplot(weather_df, aes(x = name, y = tmax)) + geom_boxplot()
+# boxplot
+```
+
+```{r}
+ggplot(weather_df, aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), alpha = .5) + 
+  stat_summary(fun = "median", color = "blue")
+# violin plots
+```
+
+```{r}
+ggplot(weather_df, aes(x = tmax, y = name)) + 
+  geom_density_ridges(scale = .85)
+# ridge plots
+```
+## Save and Export 
+```{r}
+weather_plot = ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) 
+
+ggsave("weather_plot.pdf", weather_plot, width = 8, height = 5)
+```
+
+```{r}
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+# embed figures in r-markdown document 
+```
+
