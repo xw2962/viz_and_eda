@@ -31,13 +31,13 @@ weather_df =
 weather_df
 ```
 
-## Basic scatterplot
+## Let's make a plot! 
 Create my first scatterplot ever 
 ```{r}
 ggplot(weather_df, aes(x = tmin, y = tmax)) + 
   geom_point()
 ```
-New approach, same plot
+New approach, same plot, we do this way more often!  
 ```{r}
 weather_df |>
   ggplot(aes(x = tmin, y = tmax)) + 
@@ -65,6 +65,7 @@ weather_df |>
 ```{r}
 weather_df |>
   ggplot(aes(x = tmin, y = tmax,color=name)) + 
+# color applies to all lines below 
   geom_point() +
   geom_smooth(se = FALSE)
 # Add a smooth curve
@@ -82,21 +83,28 @@ Let's facet some things!
 ```{r}
 weather_df |>
   ggplot(aes(x = tmin, y = tmax,color=name)) + 
-  geom_point(alpha = .2) +
-# alpha makes individual points more transparent, 20% transparency. 
+  geom_point(alpha = .3) +
+# alpha makes individual points more transparent, 30% transparent and 70% solid.  
   geom_smooth(se = FALSE,size=2)+
 # change the size of the smooth line 
   facet_grid(. ~ name)
-# Add facet based on name
+# Add facet based on name and seperate on "y axis"
 ```
 Let's combine some elements and try a new plot. 
 ```{r}
 weather_df |>
   ggplot(aes(x = date, y = tmax,color=name)) + 
-  geom_point(aes(size=prcp),alpha = .5) +
+  geom_point(aes(size=prcp),alpha = .3) +
   geom_smooth(se = FALSE)+
   facet_grid(. ~ name)
 # Set x axis as date and show the precipitation on graph 
+```
+Try assigning specific color 
+```{r}
+weather_df |>
+  filter(name=="CentralPark_NY") |>
+  ggplot(aes(x = date, y = tmax)) + 
+  geom_point(color="blue")
 ```
 
 Learning Assessment 

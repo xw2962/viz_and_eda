@@ -79,7 +79,7 @@ weather_df
     ## 10 CentralPark_NY USW00094728 2021-01-10     0   5    -1.6
     ## # ℹ 2,180 more rows
 
-## Basic scatterplot
+## Let’s make a plot!
 
 Create my first scatterplot ever
 
@@ -91,7 +91,7 @@ ggplot(weather_df, aes(x = tmin, y = tmax)) +
     ## Warning: Removed 17 rows containing missing values (`geom_point()`).
 
 ![](Visualization-1_files/figure-gfm/unnamed-chunk-2-1.png)<!-- --> New
-approach, same plot
+approach, same plot, we do this way more often!
 
 ``` r
 weather_df |>
@@ -139,6 +139,7 @@ weather_df |>
 ``` r
 weather_df |>
   ggplot(aes(x = tmin, y = tmax,color=name)) + 
+# color applies to all lines below 
   geom_point() +
   geom_smooth(se = FALSE)
 ```
@@ -182,8 +183,8 @@ Let’s facet some things!
 ``` r
 weather_df |>
   ggplot(aes(x = tmin, y = tmax,color=name)) + 
-  geom_point(alpha = .2) +
-# alpha makes individual points more transparent, 20% transparency. 
+  geom_point(alpha = .3) +
+# alpha makes individual points more transparent, 30% transparent and 70% solid.  
   geom_smooth(se = FALSE,size=2)+
 # change the size of the smooth line 
   facet_grid(. ~ name)
@@ -204,7 +205,7 @@ weather_df |>
 ![](Visualization-1_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ``` r
-# Add facet based on name
+# Add facet based on name and seperate on "y axis"
 ```
 
 Let’s combine some elements and try a new plot.
@@ -212,7 +213,7 @@ Let’s combine some elements and try a new plot.
 ``` r
 weather_df |>
   ggplot(aes(x = date, y = tmax,color=name)) + 
-  geom_point(aes(size=prcp),alpha = .5) +
+  geom_point(aes(size=prcp),alpha = .3) +
   geom_smooth(se = FALSE)+
   facet_grid(. ~ name)
 ```
@@ -229,6 +230,17 @@ weather_df |>
 # Set x axis as date and show the precipitation on graph 
 ```
 
+Try assigning specific color
+
+``` r
+weather_df |>
+  filter(name=="CentralPark_NY") |>
+  ggplot(aes(x = date, y = tmax)) + 
+  geom_point(color="blue")
+```
+
+![](Visualization-1_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
 Learning Assessment
 
 ``` r
@@ -244,7 +256,7 @@ weather_df |>
 
     ## `geom_smooth()` using formula = 'y ~ x'
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
 # Focuses only on Central Park, converts temperatures to Fahrenheit, makes a scatterplot of min vs. max temperature, and overlays a linear regression line (using options in geom_smooth(). 
@@ -267,7 +279,7 @@ weather_df |>
     ## Caused by error in `compute_group()`:
     ## ! The package "hexbin" is required for `stat_binhex()`
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
 # geom_bin2d()
@@ -285,7 +297,7 @@ ggplot(weather_df, aes(x = date, y = tmax, color = name)) +
 
     ## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
 ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin), color = "blue")
@@ -293,7 +305,7 @@ ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin), color = "blue")
 
     ## Warning: Removed 17 rows containing missing values (`geom_point()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ``` r
 # Defining the color of the points by hand
@@ -305,7 +317,7 @@ ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = "blue"))
 
     ## Warning: Removed 17 rows containing missing values (`geom_point()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
 # Creating a color variable that has the value blue everywhere; ggplot is then assigning colors according to this variable using the default color scheme.
@@ -325,7 +337,7 @@ weather_df |>
 
     ## Warning: Removed 17 rows containing non-finite values (`stat_bin()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 ``` r
 # histogram
@@ -345,7 +357,7 @@ weather_df |>
 
     ## Warning: Removed 17 rows containing non-finite values (`stat_bin()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 Let’s try a new geometry!
 
 ``` r
@@ -357,7 +369,7 @@ weather_df |>
 
     ## Warning: Removed 17 rows containing non-finite values (`stat_density()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 ``` r
 # Density plot
@@ -373,7 +385,7 @@ weather_df |>
 
     ## Warning: Removed 17 rows containing non-finite values (`stat_boxplot()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 ``` r
 # boxplot
@@ -394,7 +406,7 @@ weather_df |>
 
     ## Warning: Removed 3 rows containing missing values (`geom_segment()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 ``` r
 # violin plots
@@ -413,7 +425,7 @@ weather_df |>
     ## Warning: Removed 17 rows containing non-finite values
     ## (`stat_density_ridges()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
 ``` r
 # ridge plots
@@ -440,7 +452,12 @@ weather_plot
 
     ## Warning: Removed 17 rows containing missing values (`geom_point()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+``` r
+# embed figures in r-markdown document 
+```
+
 Embed at different size.
 
 ``` r
@@ -449,7 +466,7 @@ weather_plot
 
     ## Warning: Removed 17 rows containing missing values (`geom_point()`).
 
-![](Visualization-1_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+![](Visualization-1_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 ``` r
 # embed figures in r-markdown document 
