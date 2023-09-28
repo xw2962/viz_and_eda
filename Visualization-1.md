@@ -269,15 +269,11 @@ can use a neat geom!
 
 ``` r
 weather_df |>
-  ggplot(aes(x = tmin, y = tmax,color=name)) + 
+  ggplot(aes(x = tmin, y = tmax)) + 
   geom_hex() 
 ```
 
     ## Warning: Removed 17 rows containing non-finite values (`stat_binhex()`).
-
-    ## Warning: Computation failed in `stat_binhex()`
-    ## Caused by error in `compute_group()`:
-    ## ! The package "hexbin" is required for `stat_binhex()`
 
 ![](Visualization-1_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
@@ -347,10 +343,8 @@ Can we add color..
 
 ``` r
 weather_df |> 
-  ggplot(aes(x = tmin,fill=name)) + 
-  geom_histogram(position="dodge") +
-# the bins sit next to each other 
-  facet_grid(.~name)
+  ggplot(aes(x = tmin,color=name)) + 
+  geom_histogram(position="dodge") 
 ```
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
@@ -358,12 +352,19 @@ weather_df |>
     ## Warning: Removed 17 rows containing non-finite values (`stat_bin()`).
 
 ![](Visualization-1_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+``` r
+# the bins sit next to each other 
+```
+
 Let’s try a new geometry!
 
 ``` r
 weather_df |> 
-  ggplot(aes(x = tmin,fill=name)) + 
+  ggplot(aes(x = tmin,fill=name)) +
+# fill only applies to density plot 
   geom_density(alpha = .4,adjust = .5) +
+# adjust is about the same with binwidth 
   facet_grid(.~name)
 ```
 
@@ -379,7 +380,7 @@ What about boxplots?
 
 ``` r
 weather_df |> 
-  ggplot(aes(x = name,y=tmin)) + 
+  ggplot(aes(x = name,y=tmax)) + 
   geom_boxplot()
 ```
 

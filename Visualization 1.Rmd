@@ -126,7 +126,7 @@ You can have whatever geoms you want.
 You can use a neat geom!
 ```{r}
 weather_df |>
-  ggplot(aes(x = tmin, y = tmax,color=name)) + 
+  ggplot(aes(x = tmin, y = tmax)) + 
   geom_hex() 
 # geom_bin2d()
 # geom_density2d()
@@ -161,16 +161,17 @@ Can we add color..
 
 ```{r}
 weather_df |> 
-  ggplot(aes(x = tmin,fill=name)) + 
-  geom_histogram(position="dodge") +
+  ggplot(aes(x = tmin,color=name)) + 
+  geom_histogram(position="dodge") 
 # the bins sit next to each other 
-  facet_grid(.~name)
 ```
 Let's try a new geometry!
 ```{r}
 weather_df |> 
-  ggplot(aes(x = tmin,fill=name)) + 
+  ggplot(aes(x = tmin,fill=name)) +
+# fill only applies to density plot 
   geom_density(alpha = .4,adjust = .5) +
+# adjust is about the same with binwidth 
   facet_grid(.~name)
 # Density plot
 ```
@@ -179,7 +180,7 @@ What about boxplots?
 
 ```{r}
 weather_df |> 
-  ggplot(aes(x = name,y=tmin)) + 
+  ggplot(aes(x = name,y=tmax)) + 
   geom_boxplot()
 # boxplot
 ```
