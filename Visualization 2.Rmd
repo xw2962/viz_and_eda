@@ -28,38 +28,30 @@ weather_df =
   select(name, id, everything())
 weather_df
 ```
-Revisit scatterplot
+## Remember this plot...? 
 ```{r}
 weather_df %>% 
-  ggplot(aes(x = tmin, y = tmax)) + 
-  geom_point(aes(color = name), alpha = .5)
+  ggplot(aes(x = tmin, y = tmax, color=name)) + 
+  geom_point( alpha = .5)
 ```
-Add labels 
+## Add labels 
 ```{r}
 weather_df %>% 
-  ggplot(aes(x = tmin, y = tmax)) + 
-  geom_point(aes(color = name), alpha = .5) + 
+  ggplot(aes(x = tmin, y = tmax, color=name)) + 
+  geom_point( alpha = .5) + 
   labs(
     title = "Temperature plot",
+# specify the title 
     x = "Minimum daily temperature (C)",
+# specify the x axis label  
     y = "Maxiumum daily temperature (C)",
-    caption = "Data from the rnoaa package"
+# specify the y axis label 
+    caption = "Data from the rnoaa package; temperatures in 2017"
   )
+# add a caption 
 ```
-Scales 
-```{r}
-weather_df %>% 
-  ggplot(aes(x = tmin, y = tmax)) + 
-  geom_point(aes(color = name), alpha = .5) + 
-  labs(
-    title = "Temperature plot",
-    x = "Minimum daily temperature (C)",
-    y = "Maxiumum daily temperature (C)",
-    caption = "Data from the rnoaa package") + 
-  scale_x_continuous(
-    breaks = c(-15, 0, 15), 
-    labels = c("-15º C", "0", "15"))
-```
+## Scales 
+Start with the same plot; x and y scales.
 
 ```{r}
 weather_df %>% 
@@ -69,69 +61,94 @@ weather_df %>%
     title = "Temperature plot",
     x = "Minimum daily temperature (C)",
     y = "Maxiumum daily temperature (C)",
-    caption = "Data from the rnoaa package") + 
+    caption = "Data from the rnoaa package; temperatures in 2017") + 
   scale_x_continuous(
     breaks = c(-15, 0, 15), 
-    labels = c("-15ºC", "0", "15"),
-    limits = c(-20, 30)) +
-# xlim() can be used to control the plot limits in the X axis
-  scale_y_continuous(
+    labels = c("-15º C", "0", "15")) +
+# scale label 
+# categorical or factor variable we use scale_x_discrete 
+    scale_y_continuous(
     trans = "sqrt", 
 # scale_y_sqrt() can be added to a ggplot object to transform the Y scale
+  # OR trans="log"
     position = "right")
+# change the scale position to the right 
 ```
+
+Look at color scales 
 
 ```{r}
 weather_df %>% 
-  ggplot(aes(x = tmin, y = tmax)) + 
+  ggplot(aes(x = tmin, y = tmax,color=name)) + 
   geom_point(aes(color = name), alpha = .5) + 
   labs(
     title = "Temperature plot",
     x = "Minimum daily temperature (C)",
     y = "Maxiumum daily temperature (C)",
-    caption = "Data from the rnoaa package") + 
-  scale_color_hue(name = "Location", h = c(100, 300))
-# arguments to scale_color_hue() control the color scale and the name in the plot legend
+    caption = "Data from the rnoaa package; temperatures in 2017") + 
+    scale_color_hue(
+      name = "Location", 
+# change the title of the caption from "name" to "location" 
+      h = c(100, 300))
+# arguments to scale_color_hue() control the color scale 
+```
+OR 
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax,color=name)) + 
+  geom_point(aes(color = name), alpha = .5) + 
+  labs(
+    title = "Temperature plot",
+    x = "Minimum daily temperature (C)",
+    y = "Maxiumum daily temperature (C)",
+    caption = "Data from the rnoaa package; temperatures in 2017") + 
+    viridis::scale_color_viridis(
+      name = "Location",
+      discrete=TRUE)
+# viridis::scale_color_viridis assume the scale is continuous, we have to tell it's discrete
 ```
 
 Themes
+
+Shift the legend 
 ```{r}
-ggp_temp_plot = 
-  weather_df %>% 
-  ggplot(aes(x = tmin, y = tmax)) + 
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax,color=name)) + 
   geom_point(aes(color = name), alpha = .5) + 
   labs(
     title = "Temperature plot",
     x = "Minimum daily temperature (C)",
     y = "Maxiumum daily temperature (C)",
-    caption = "Data from the rnoaa package"
-  ) + 
-  viridis::scale_color_viridis(
-    name = "Location", 
-    discrete = TRUE
-  )
-
-ggp_temp_plot
-```
-
-```{r}
-ggp_temp_plot + 
+    caption = "Data from the rnoaa package; temperatures in 2017") + 
+    viridis::scale_color_viridis(
+      name = "Location",
+      discrete=TRUE) + 
   theme(legend.position = "bottom")
 # change the position of legend to bottom 
 ```
 
 theme built in 
 ```{r}
-ggp_temp_plot + 
-  theme_bw() + 
-  theme(legend.position = "bottom")
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax,color=name)) + 
+  geom_point(aes(color = name), alpha = .5) + 
+  labs(
+    title = "Temperature plot",
+    x = "Minimum daily temperature (C)",
+    y = "Maxiumum daily temperature (C)",
+    caption = "Data from the rnoaa package; temperatures in 2017") + 
+    viridis::scale_color_viridis(
+      name = "Location",
+      discrete=TRUE) + 
+      theme_bw()+
+      theme(legend.position="bottom")
+# theme black and white
+# theme_minimal() 
+# theme_classic()
+# ggthemes::theme_economist()
+# ggthemes::theme_excel()
 ```
-theme classic 
-```{r}
-ggp_temp_plot + 
-  theme_classic() + 
-  theme(legend.position = "bottom")
-```
+
 learning assessment
 ```{r}
 ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
@@ -147,7 +164,33 @@ ggplot(weather_df, aes(x = date, y = tmax, color = name)) +
   theme_minimal() + 
   theme(legend.position = "bottom")
 ```
-data argument in `geom_*`
+
+## Setting options on the very beginning of rmarkdown document 
+
+```{r, eval=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width=6,
+  fig.asp= .6,
+  out.width="90%"
+)
+
+theme_set(theme_minimal()+theme(legend.position="bottom"))
+
+options(
+  ggplot2.cotinuous.color="viridis",
+  ggplot2.cotinuous.fill="viridis"
+)
+# overwrite ggplot default coloring and take care of call the colors and fills 
+
+scale_color_discrete=scale_color_viridis_d
+scale_fill_discrete=scale_fill_viridis_d
+```
+
+
+## data argument in `geom`
+
 ```{r}
 central_park = 
   weather_df %>% 
@@ -162,7 +205,19 @@ ggplot(data = waikiki, aes(x = date, y = tmax, color = name)) +
   geom_line(data = central_park)
 # use one in the ggplot() call and another in geom_line()
 ```
-patchwork
+
+## patchwork
+
+remember faceting?
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin,fill=name)) +
+# fill only applies to density plot 
+  geom_density(alpha = .5) +
+# adjust is about the same with binwidth 
+  facet_grid(.~name)
+```
+
 ```{r}
 tmax_tmin_p = 
   weather_df %>% 
@@ -186,7 +241,67 @@ tmax_date_p =
 
 (tmax_tmin_p + prcp_dens_p) / tmax_date_p
 ```
-data manipulation 
+## data manipulation 
+
+Control your factors. 
+```{r}
+weather_df  %>%
+  mutate(
+    name=factor(name),
+  # character to fatcor version of name
+    name=forcats::fct_relevel(name,c("Waikiki_HA"))
+  ) %>%
+# change the order of name 
+  ggplot(aes(x=name,y=tmax,fill=name)) +
+  geom_violin(alpha=.5)
+```
+
+What if I wanted densities for tmin and tmax simultaneouly? 
+
+```{r}
+weather_df  %>%
+  filter(name=="CentralPark_NY") %>%
+  pivot_longer(
+    tmax:tmin,
+    names_to="observations",
+    values_to="temperatures"
+  ) %>%
+  ggplot(aes(x=temperatures,fill=observations))+
+  geom_density(alpha=.5)
+```
+
+## Revisit the pups 
+
+Data from the FAS study. 
+```{r}
+pup_data=
+  read_csv("./data/FAS_pups.csv") %>%
+  janitor::clean_names() %>%
+  mutate(sex=recode(sex,`1`="male",`2`="female"))
+
+litters_data=
+  read_csv("./data/FAS_litters.csv") %>%
+  janitor::clean_names() %>%
+  separate(group,into=c("dose","day_of_tx"),sep=3)
+
+fas_data=left_join(pup_data,litters_data,by="litter_number")
+
+fas_data %>%
+  select(dose,day_of_tx,starts_with("pd_")) %>%
+  pivot_longer(
+    pd_ears:pd_walk,
+    names_to="outcome",
+    values_to="pn_day"
+  )  %>%
+  drop_na() %>%
+  mutate(outcome=forcats::fct_relevel(outcome,"pn_ears","pn_pivot","pn_walk","pn_eyes")) %>%
+# factor manipulation 
+  ggplot(aes(x=dose,y=pn_day))+
+  geom_violin()+
+  facet_grid(day_of_tx~outcome)
+
+```
+
 ```{r}
 weather_df %>%
   mutate(name = forcats::fct_reorder(name, tmax)) %>% 
