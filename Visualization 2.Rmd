@@ -2,7 +2,7 @@
 title: "Visualization 2"
 author: "Xiaoyu Wu"
 date: "2023-09-29"
-output: html_document
+output: github_document
 ---
 
 ```{r setup}
