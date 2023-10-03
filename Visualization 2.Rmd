@@ -71,6 +71,7 @@ weather_df %>%
     trans = "sqrt", 
 # scale_y_sqrt() can be added to a ggplot object to transform the Y scale
   # OR trans="log"
+    limits=c(0,30),
     position = "right")
 # change the scale position to the right 
 ```
@@ -105,7 +106,7 @@ weather_df %>%
     viridis::scale_color_viridis(
       name = "Location",
       discrete=TRUE)
-# viridis::scale_color_viridis assume the scale is continuous, we have to tell it's discrete
+# viridis::scale_color_viridis assume the scale is continuous, we have to tell it's discrete by "name"
 ```
 
 Themes
@@ -195,7 +196,6 @@ scale_fill_discrete=scale_fill_viridis_d
 central_park = 
   weather_df %>% 
   filter(name == "CentralPark_NY")
-
 waikiki = 
   weather_df %>% 
   filter(name == "Waikiki_HA")
