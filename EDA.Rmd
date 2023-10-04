@@ -1,0 +1,240 @@
+---
+title: "EDA"
+author: "Xiaoyu Wu"
+date: "2023-10-04"
+output: github_document
+---
+```{r}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width=6,
+  fig.asp= .6,
+  out.width="90%"
+)
+
+theme_set(theme_minimal()+theme(legend.position="bottom"))
+
+options(
+  ggplot2.cotinuous.color="viridis",
+  ggplot2.cotinuous.fill="viridis"
+)
+# overwrite ggplot default coloring and take care of call the colors and fills 
+
+scale_color_discrete=scale_color_viridis_d
+scale_fill_discrete=scale_fill_viridis_d
+```
+
+## Load Dataset 
+```{r}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USW00022534", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2021-01-01",
+    date_max = "2022-12-31") |>
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USW00022534 = "Molokai_HI",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10,
+    month = lubridate::floor_date(date, unit = "month")) |>
+  select(name, id, everything())
+weather_df
+```
+## Initial Numeric Exploitation
+Histogram of precipitation 
+```{r}
+weather_df |> 
+  ggplot(aes(x = prcp)) + 
+  geom_histogram()
+```
+Examine the relatively few days have very high precipitation
+```{r}
+weather_df |> 
+  filter(prcp >= 1000)
+```
+Scatterplot 
+```{r}
+weather_df |> 
+  filter(tmax >= 20, tmax <= 30) |> 
+  ggplot(aes(x = tmin, y = tmax, color = name, shape = name)) + 
+  geom_point(alpha = .75)
+```
+## `Group by`
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  
+  ungroup()
+```
+## Counting Things: count the number of observations in each month
+```{r}
+weather_df |>
+  group_by(month) |>
+  summarize(n_obs = n())
+# n() is the function and n_obs is the new column added 
+```
+Summarize: count the number of observations in each month and name
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(n_obs = n())
+```
+count() in place of group_by()
+```{r}
+weather_df |>
+  count(month, name = "n_obs")
+# n_obs is the new column added 
+```
+other helpful counters 
+```{r}
+weather_df |>
+  group_by(month) |>
+  summarize(
+    n_obs = n(),
+# count the number of observations in each month 
+    n_days = n_distinct(date))
+# count the number of distinct values of date in each month
+```
+
+## 2 times 2 tables 
+```{r}
+weather_df |> 
+  mutate(
+    cold = case_when(
+      tmax <  5 ~ "cold",
+      tmax >= 5 ~ "not_cold",
+      TRUE      ~ ""
+  )) |> 
+  filter(name != "Waikiki_HA") |> 
+  group_by(name, cold) |> 
+  summarize(count = n())
+```
+re-organize into a more standard (non-tidy) 2x2 table 
+```{r}
+weather_df |> 
+  mutate(cold = case_when(
+    tmax <  5 ~ "cold",
+    tmax >= 5 ~ "not_cold",
+    TRUE     ~ ""
+  )) |> 
+  filter(name != "Waikiki_HA") |> 
+  janitor::tabyl(name, cold)
+```
+## General summaries
+```{r}
+weather_df |>
+  group_by(month) |>
+  summarize(
+    mean_tmax = mean(tmax),
+    mean_prec = mean(prcp, na.rm = TRUE),
+    median_tmax = median(tmax),
+    sd_tmax = sd(tmax))
+```
+You can group by more than one variable.
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(
+    mean_tmax = mean(tmax),
+    median_tmax = median(tmax))
+```
+summarize multiple columns using the same summary
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(across(tmin:prcp, mean))
+```
+we can take create a plot based on the monthly summary
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(mean_tmax = mean(tmax)) |>
+  ggplot(aes(x = month, y = mean_tmax, color = name)) + 
+    geom_point() + geom_line() + 
+    theme(legend.position = "bottom")
+```
+pivot wider format
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(mean_tmax = mean(tmax)) |> 
+  pivot_wider(
+    names_from = name,
+    values_from = mean_tmax) |> 
+  knitr::kable(digits = 1)
+```
+## Grouped Mutate
+compare the daily max temperature to the annual average max temperature for each station separately
+```{r}
+weather_df |>
+  group_by(name) |>
+  mutate(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    centered_tmax = tmax - mean_tmax) |> 
+  ggplot(aes(x = date, y = centered_tmax, color = name)) + 
+    geom_point() 
+```
+## Window functions
+we can find the max temperature ranking within month.
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  mutate(temp_ranking = min_rank(tmax))
+# rank from lowest to highest 
+```
+keep only the day with the lowest max temperature within each month
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  filter(min_rank(tmax) < 2)
+```
+keep the three days with the highest max temperature
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  filter(min_rank(desc(tmax)) < 4)
+```
+find the day-by-day change in max temperature within each station over the year
+```{r}
+weather_df |>
+  group_by(name) |>
+  mutate(temp_change = tmax - lag(tmax))
+```
+
+```{r}
+weather_df |>
+  group_by(name) |>
+  mutate(temp_change = tmax - lag(tmax)) |>
+  summarize(
+    temp_change_sd = sd(temp_change, na.rm = TRUE),
+    temp_change_max = max(temp_change, na.rm = TRUE))
+```
+## learning assessment 
+```{r}
+pulse_data = 
+  haven::read_sas("./data/public_pulse_data.sas7bdat") |>
+  janitor::clean_names() |>
+  pivot_longer(
+    bdi_score_bl:bdi_score_12m,
+    names_to = "visit", 
+    names_prefix = "bdi_score_",
+    values_to = "bdi") |>
+  select(id, visit, everything()) |>
+  mutate(
+    visit = replace(visit, visit == "bl", "00m"),
+    visit = factor(visit, levels = str_c(c("00", "01", "06", "12"), "m"))) |>
+  arrange(id, visit)
+pulse_data
+pulse_data |> 
+  group_by(visit) |> 
+  summarize(
+    mean_bdi = mean(bdi, na.rm = TRUE),
+    median_bdi = median(bdi, na.rm = TRUE)) |> 
+  knitr::kable(digits = 3)
+```
+
