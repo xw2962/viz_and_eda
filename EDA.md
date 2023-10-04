@@ -272,13 +272,13 @@ weather_df |>
 
 ``` r
 weather_df |> 
+  filter(name != "Waikiki_HA") |>
   mutate(
     cold = case_when(
       tmax <  5 ~ "cold",
       tmax >= 5 ~ "not_cold",
       TRUE      ~ ""
   )) |> 
-  filter(name != "Waikiki_HA") |> 
   group_by(name, cold) |> 
   summarize(count = n())
 ```
