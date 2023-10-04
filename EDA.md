@@ -324,6 +324,7 @@ weather_df |>
   summarize(
     mean_tmax = mean(tmax),
     mean_prec = mean(prcp, na.rm = TRUE),
+# get rid of the missing values by using "na.rm = TRUE"
     median_tmax = median(tmax),
     sd_tmax = sd(tmax))
 ```
@@ -372,7 +373,7 @@ weather_df |>
     ## 10 CentralPark_NY 2021-10-01     19.9         20.6
     ## # ℹ 62 more rows
 
-summarize multiple columns using the same summary
+suppose you want to summarize many columns
 
 ``` r
 weather_df |>
@@ -460,7 +461,11 @@ weather_df |>
 | 2022-11-01 |           14.0 |       28.0 |          2.1 |
 | 2022-12-01 |            6.8 |       27.3 |           NA |
 
-## Grouped Mutate
+``` r
+# retain how many digits after zero
+```
+
+## `grouped by` and `mutate`
 
 compare the daily max temperature to the annual average max temperature
 for each station separately
@@ -512,7 +517,7 @@ keep only the day with the lowest max temperature within each month
 ``` r
 weather_df |>
   group_by(name, month) |>
-  filter(min_rank(tmax) < 2)
+  filter(min_rank(tmax) == 1)
 ```
 
     ## # A tibble: 92 × 7
@@ -645,3 +650,7 @@ pulse_data |>
 | 01m   |    6.046 |          4 |
 | 06m   |    5.672 |          4 |
 | 12m   |    6.097 |          4 |
+
+## Quick note
+
+summarize only gets you so far
